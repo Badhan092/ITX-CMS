@@ -71,14 +71,17 @@ router.get("/sections", async (req, res) => {
 router.post("/sections", async (req, res) => {
   try {
     const { page_id, title, subtitle, classname, position } = req.body;
-    if (!page_id || !title) return res.status(400).json({ message: "page_id and title are required" });
+    if (!page_id || !classname)
+      return res.status(400).json({ message: "page_id and classname are required" });
 
     const [result] = await conn.execute(
       `INSERT INTO sections (page_id, title, subtitle, classname, position) VALUES (?, ?, ?, ?, ?)`,
-      [page_id, title, subtitle || "", classname || "", position || 0]
+      [page_id, title || "", subtitle || "", classname, position || 0]
     );
 
-    const [newSection] = await conn.execute("SELECT * FROM sections WHERE id = ?", [result.insertId]);
+    const [newSection] = await conn.execute("SELECT * FROM sections WHERE id = ?", [
+      result.insertId,
+    ]);
     res.status(201).json(newSection[0]);
   } catch (err) {
     console.error(err);
@@ -92,9 +95,14 @@ router.put("/sections/:id", async (req, res) => {
     const { title, subtitle, classname, position } = req.body;
     const sectionId = req.params.id;
 
+    if (!classname) {
+      return res.status(400).json({ message: "classname is required" });
+    }
+
     const [result] = await conn.execute(
-      `UPDATE sections SET title=?, subtitle=?, classname=?, position=?, updatedAt=NOW() WHERE id=?`,
-      [title, subtitle || "", classname || "", position || 0, sectionId]
+      `UPDATE sections 
+      SET title=?, subtitle=?, classname=?, position=?, updatedAt=NOW() WHERE id=?`,
+      [title || "", subtitle || "", classname, position || 0, sectionId]
     );
 
     if (result.affectedRows === 0) return res.status(404).json({ message: "Section not found" });
@@ -126,20 +134,25 @@ router.delete("/sections/:id", async (req, res) => {
 router.put("/sections/reorder", async (req, res) => {
   try {
     const { sections } = req.body; // [{ id, position }]
-    if (!Array.isArray(sections)) return res.status(400).json({ message: "Invalid sections array" });
+    if (!Array.isArray(sections))
+      return res.status(400).json({ message: "Invalid sections array" });
 
     await conn.beginTransaction();
     for (const sec of sections) {
-      await conn.execute(
-        `UPDATE sections SET position=?, updatedAt=NOW() WHERE id=?`,
-        [sec.position, sec.id]
-      );
+      await conn.execute(`UPDATE sections SET position=?, updatedAt=NOW() WHERE id=?`, [
+        sec.position,
+        sec.id,
+      ]);
     }
     await conn.commit();
 
     res.json({ message: "Sections reordered successfully" });
   } catch (err) {
-    try { await conn.rollback(); } catch (rollbackErr) { console.error("Rollback failed:", rollbackErr); }
+    try {
+      await conn.rollback();
+    } catch (rollbackErr) {
+      console.error("Rollback failed:", rollbackErr);
+    }
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
@@ -169,14 +182,25 @@ router.get("/section_rows", async (req, res) => {
 router.post("/section_rows", async (req, res) => {
   try {
     const { section_id, title, subtitle, button, content, mediaUrl, position } = req.body;
-    if (!section_id || !title) return res.status(400).json({ message: "section_id and title are required" });
+    if (!section_id || !title)
+      return res.status(400).json({ message: "section_id and title are required" });
 
     const [result] = await conn.execute(
       `INSERT INTO section_rows (section_id, title, subtitle, button, content, mediaUrl, position) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [section_id, title, subtitle || "", button || "", content || "", mediaUrl || "", position || 0]
+      [
+        section_id,
+        title,
+        subtitle || "",
+        button || "",
+        content || "",
+        mediaUrl || "",
+        position || 0,
+      ]
     );
 
-    const [newRow] = await conn.execute("SELECT * FROM section_rows WHERE id = ?", [result.insertId]);
+    const [newRow] = await conn.execute("SELECT * FROM section_rows WHERE id = ?", [
+      result.insertId,
+    ]);
     res.status(201).json(newRow[0]);
   } catch (err) {
     console.error(err);

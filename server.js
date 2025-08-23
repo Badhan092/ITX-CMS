@@ -64,8 +64,8 @@ async function initTables() {
     CREATE TABLE IF NOT EXISTS sections (
       id INT AUTO_INCREMENT PRIMARY KEY,
       page_id INT NOT NULL,
-      title VARCHAR(255) NOT NULL,
-      subtitle VARCHAR(255) NOT NULL,
+      title VARCHAR(255) NULL,
+      subtitle VARCHAR(255) NULL,
       classname VARCHAR(255) NOT NULL,
       position INT DEFAULT 0,
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
