@@ -10,6 +10,7 @@ const multer = require("multer");
 const pagesModule = require("./routes/pages");
 const cmsModule = require("./routes/cmsSectionsRows");
 const galleryModule = require("./routes/gallery");
+const newsBlogModule = require("./routes/newsBlog");
 
 const app = express();
 app.use(express.json());
@@ -17,10 +18,11 @@ app.use(express.json());
 // Allow requests from frontend
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: [/http:\/\/localhost:\d+$/],
     credentials: true,
   })
 );
+
 
 // Serve uploaded files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -41,6 +43,7 @@ async function connectDB() {
   pagesModule.setConnection(conn);
   cmsModule.setConnection(conn);
   galleryModule.setConnection(conn);
+  newsBlogModule.setConnection(conn);
 }
 
 // Initialize tables
@@ -100,6 +103,20 @@ async function initTables() {
       updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
+
+  await conn.execute(`
+    CREATE TABLE IF NOT EXISTS news_blog (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      imageUrl VARCHAR(255) NOT NULL,
+      title VARCHAR(255) NOT NULL,
+      subtitle VARCHAR(255),
+      description TEXT,
+      link VARCHAR(255),
+      date DATE NOT NULL,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `);
 }
 
 // Multer for file uploads
@@ -130,6 +147,7 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
 app.use("/api", pagesModule.router);
 app.use("/api", cmsModule.router);
 app.use("/api", galleryModule.router);
+app.use("/api", newsBlogModule.router);
 
 // Start server
 async function startServer() {
