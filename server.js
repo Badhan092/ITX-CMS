@@ -11,6 +11,7 @@ const pagesModule = require("./routes/pages");
 const cmsModule = require("./routes/cmsSectionsRows");
 const galleryModule = require("./routes/gallery");
 const newsBlogModule = require("./routes/newsBlog");
+const featureSectionModule = require("./routes/featureSection");
 
 const app = express();
 app.use(express.json());
@@ -22,7 +23,6 @@ app.use(
     credentials: true,
   })
 );
-
 
 // Serve uploaded files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -44,12 +44,14 @@ async function connectDB() {
   cmsModule.setConnection(conn);
   galleryModule.setConnection(conn);
   newsBlogModule.setConnection(conn);
+  featureSectionModule.setConnection(conn);
 }
 
 // Initialize tables
 async function initTables() {
   if (!conn) throw new Error("No DB connection");
 
+  // pages table
   await conn.execute(`
     CREATE TABLE IF NOT EXISTS pages (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -63,6 +65,7 @@ async function initTables() {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
 
+  // sections and section_rows tables
   await conn.execute(`
     CREATE TABLE IF NOT EXISTS sections (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -77,6 +80,7 @@ async function initTables() {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
 
+  // section_rows table
   await conn.execute(`
     CREATE TABLE IF NOT EXISTS section_rows (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -93,6 +97,23 @@ async function initTables() {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
 
+  // feature_section table
+  await conn.execute(`
+  CREATE TABLE IF NOT EXISTS feature_section (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    subtitle VARCHAR(255),
+    description LONGTEXT,
+    slugs JSON,
+    images JSON,
+    button1 VARCHAR(255),
+    button2 VARCHAR(255),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+`);
+
+  // gallery table
   await conn.execute(`
     CREATE TABLE IF NOT EXISTS gallery (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -104,6 +125,7 @@ async function initTables() {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
 
+  // news_blog table
   await conn.execute(`
     CREATE TABLE IF NOT EXISTS news_blog (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -148,6 +170,7 @@ app.use("/api", pagesModule.router);
 app.use("/api", cmsModule.router);
 app.use("/api", galleryModule.router);
 app.use("/api", newsBlogModule.router);
+app.use("/api", featureSectionModule.router);
 
 // Start server
 async function startServer() {
