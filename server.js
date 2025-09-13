@@ -11,6 +11,7 @@ const pagesModule = require("./routes/pages");
 const cmsModule = require("./routes/cmsSectionsRows");
 const galleryModule = require("./routes/gallery");
 const newsBlogModule = require("./routes/newsBlog");
+const caseStudyModule = require("./routes/caseStudy");
 const featureSectionModule = require("./routes/featureSection");
 
 const app = express();
@@ -29,21 +30,25 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 let conn;
 
-// Connect to DB
+// Wrap the DB connection in an async function
 async function connectDB() {
   conn = await mysql.createConnection({
     host: process.env.DB_HOST || "localhost",
     user: process.env.DB_USER || "root",
     password: process.env.DB_PASS || "",
-    database: process.env.DB_NAME || "cms_db",
+    database: process.env.DB_NAME || "itx_db",
+    port: process.env.DB_PORT || 3306,
     multipleStatements: false,
   });
+
   console.log("✅ MySQL connected!");
 
+  // Pass connection to modules
   pagesModule.setConnection(conn);
   cmsModule.setConnection(conn);
   galleryModule.setConnection(conn);
   newsBlogModule.setConnection(conn);
+  caseStudyModule.setConnection(conn);
   featureSectionModule.setConnection(conn);
 }
 
@@ -85,11 +90,11 @@ async function initTables() {
     CREATE TABLE IF NOT EXISTS section_rows (
       id INT AUTO_INCREMENT PRIMARY KEY,
       section_id INT NOT NULL,
-      title VARCHAR(255),
-      subtitle VARCHAR(255),
-      button VARCHAR(255),
-      content LONGTEXT,
-      mediaUrl VARCHAR(255),
+      title VARCHAR(255) NULL,
+      subtitle VARCHAR(255) NULL,
+      button VARCHAR(255) NULL,
+      content LONGTEXT NULL,
+      mediaUrl VARCHAR(255) NULL,
       position INT DEFAULT 0,
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -139,6 +144,21 @@ async function initTables() {
       updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
+
+  // case_study table
+  await conn.execute(`
+    CREATE TABLE IF NOT EXISTS case_study (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      imageUrl VARCHAR(255) NOT NULL,
+      title VARCHAR(255) NOT NULL,
+      subtitle VARCHAR(255),
+      description TEXT,
+      link VARCHAR(255),
+      date DATE NOT NULL,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `);
 }
 
 // Multer for file uploads
@@ -170,6 +190,7 @@ app.use("/api", pagesModule.router);
 app.use("/api", cmsModule.router);
 app.use("/api", galleryModule.router);
 app.use("/api", newsBlogModule.router);
+app.use("/api", caseStudyModule.router);
 app.use("/api", featureSectionModule.router);
 
 // Start server
