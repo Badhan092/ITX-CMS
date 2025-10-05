@@ -15,6 +15,8 @@ const clientModule = require("./routes/client");
 const newsBlogModule = require("./routes/newsBlog");
 const caseStudyModule = require("./routes/caseStudy");
 const pricingModule = require("./routes/pricing");
+const ourTeamModule = require("./routes/ourteam");
+const jobPostModule = require("./routes/jobPost");
 const testimonialsModule = require("./routes/testimonials");
 const featureSectionModule = require("./routes/featureSection");
 
@@ -54,8 +56,11 @@ async function connectDB() {
     newsBlogModule.setConnection(conn);
     caseStudyModule.setConnection(conn);
     pricingModule.setConnection(conn);
+    ourTeamModule.setConnection(conn);
+    jobPostModule.setConnection(conn);
     testimonialsModule.setConnection(conn);
     featureSectionModule.setConnection(conn);
+
 }
 
 // Initialize tables
@@ -99,6 +104,7 @@ async function initTables() {
       title VARCHAR(255) NULL,
       subtitle VARCHAR(255) NULL,
       button VARCHAR(255) NULL,
+      classname VARCHAR(255) NULL,
       content LONGTEXT NULL,
       mediaUrl VARCHAR(255) NULL,
       position INT DEFAULT 0,
@@ -220,6 +226,37 @@ async function initTables() {
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `);
 
+    // ourteam table
+    await conn.execute(`
+    CREATE TABLE IF NOT EXISTS ourteam (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      role VARCHAR(255) NOT NULL,
+      photo VARCHAR(500) NOT NULL,
+      message LONGTEXT,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `);
+
+    // job_posts table
+    await conn.execute(`
+        CREATE TABLE IF NOT EXISTS job_posts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            department VARCHAR(255),
+            location VARCHAR(255),
+            type ENUM('Full-Time', 'Part-Time', 'Contract', 'Internship') DEFAULT 'Full-Time',
+            description LONGTEXT,
+            requirements LONGTEXT,
+            responsibilities LONGTEXT,
+            salary VARCHAR(100),
+            deadline DATE,
+            image VARCHAR(500),
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
 }
 
@@ -257,6 +294,8 @@ app.use("/api", newsBlogModule.router);
 app.use("/api", caseStudyModule.router);
 app.use("/api", pricingModule.router);
 app.use("/api", faqModule.router);
+app.use("/api", jobPostModule.router);
+app.use("/api", ourTeamModule.router);
 app.use("/api", testimonialsModule.router);
 app.use("/api", featureSectionModule.router);
 
