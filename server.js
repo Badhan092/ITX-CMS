@@ -17,6 +17,7 @@ const caseStudyModule = require("./routes/caseStudy");
 const pricingModule = require("./routes/pricing");
 const ourTeamModule = require("./routes/ourteam");
 const jobPostModule = require("./routes/jobPost");
+const jobApplicationModule = require("./routes/jobApplication");
 const testimonialsModule = require("./routes/testimonials");
 const featureSectionModule = require("./routes/featureSection");
 
@@ -58,6 +59,7 @@ async function connectDB() {
     pricingModule.setConnection(conn);
     ourTeamModule.setConnection(conn);
     jobPostModule.setConnection(conn);
+    jobApplicationModule.setConnection(conn);
     testimonialsModule.setConnection(conn);
     featureSectionModule.setConnection(conn);
 
@@ -258,9 +260,23 @@ async function initTables() {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
+    // job_applications table
+    await conn.execute(`
+    CREATE TABLE IF NOT EXISTS job_applications (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        job_id INT NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(50) NOT NULL,
+        message LONGTEXT,
+        resume VARCHAR(500) NOT NULL,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT fk_job_application FOREIGN KEY (job_id) REFERENCES job_posts(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+`);
+
+
 }
-
-
 
 // Multer for file uploads
 const storage = multer.diskStorage({
@@ -275,15 +291,17 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage});
 
-// Root route
+// Root Route
 app.get("/", (req, res) => res.send("CMS backend is running"));
 
-// Upload endpoint
+
+// Upload Endpoint
 app.post("/api/upload", upload.single("file"), (req, res) => {
     if (!req.file) return res.status(400).json({message: "No file uploaded"});
     const url = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
     res.json({url, filename: req.file.filename});
 });
+
 
 // Mount routers
 app.use("/api", pagesModule.router);
@@ -296,6 +314,7 @@ app.use("/api", pricingModule.router);
 app.use("/api", faqModule.router);
 app.use("/api", jobPostModule.router);
 app.use("/api", ourTeamModule.router);
+app.use("/api", jobApplicationModule.router);
 app.use("/api", testimonialsModule.router);
 app.use("/api", featureSectionModule.router);
 
