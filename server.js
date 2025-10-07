@@ -17,6 +17,7 @@ const caseStudyModule = require("./routes/caseStudy");
 const pricingModule = require("./routes/pricing");
 const ourTeamModule = require("./routes/ourteam");
 const jobPostModule = require("./routes/jobPost");
+const contactUsModule = require("./routes/contactUs");
 const jobApplicationModule = require("./routes/jobApplication");
 const testimonialsModule = require("./routes/testimonials");
 const featureSectionModule = require("./routes/featureSection");
@@ -59,6 +60,7 @@ async function connectDB() {
     pricingModule.setConnection(conn);
     ourTeamModule.setConnection(conn);
     jobPostModule.setConnection(conn);
+    contactUsModule.setConnection(conn);
     jobApplicationModule.setConnection(conn);
     testimonialsModule.setConnection(conn);
     featureSectionModule.setConnection(conn);
@@ -260,6 +262,21 @@ async function initTables() {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
+
+    // contact_us table
+    await conn.execute(`
+        CREATE TABLE IF NOT EXISTS contact_us (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            subject VARCHAR(255) NOT NULL,
+            message LONGTEXT,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+
     // job_applications table
     await conn.execute(`
     CREATE TABLE IF NOT EXISTS job_applications (
@@ -314,6 +331,7 @@ app.use("/api", pricingModule.router);
 app.use("/api", faqModule.router);
 app.use("/api", jobPostModule.router);
 app.use("/api", ourTeamModule.router);
+app.use("/api", contactUsModule.router);
 app.use("/api", jobApplicationModule.router);
 app.use("/api", testimonialsModule.router);
 app.use("/api", featureSectionModule.router);
