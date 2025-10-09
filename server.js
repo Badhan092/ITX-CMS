@@ -10,7 +10,9 @@ const multer = require("multer");
 const pagesModule = require("./routes/pages");
 const cmsModule = require("./routes/cmsSectionsRows");
 const galleryModule = require("./routes/gallery");
+const faqSectionModule = require("./routes/faqSection");
 const faqModule = require("./routes/faq");
+const clientSectionModule = require("./routes/clientSection");
 const clientModule = require("./routes/client");
 const newsBlogModule = require("./routes/newsBlog");
 const caseStudyModule = require("./routes/caseStudy");
@@ -20,6 +22,7 @@ const jobPostModule = require("./routes/jobPost");
 const contactUsModule = require("./routes/contactUs");
 const jobApplicationModule = require("./routes/jobApplication");
 const testimonialsModule = require("./routes/testimonials");
+const testimonialSectionModule = require("./routes/testimonialSection");
 const featureSectionModule = require("./routes/featureSection");
 
 
@@ -53,8 +56,10 @@ async function connectDB() {
     pagesModule.setConnection(conn);
     cmsModule.setConnection(conn);
     galleryModule.setConnection(conn);
+    clientSectionModule.setConnection(conn);
     clientModule.setConnection(conn);
     faqModule.setConnection(conn);
+    faqSectionModule.setConnection(conn);
     newsBlogModule.setConnection(conn);
     caseStudyModule.setConnection(conn);
     pricingModule.setConnection(conn);
@@ -63,6 +68,7 @@ async function connectDB() {
     contactUsModule.setConnection(conn);
     jobApplicationModule.setConnection(conn);
     testimonialsModule.setConnection(conn);
+    testimonialSectionModule.setConnection(conn);
     featureSectionModule.setConnection(conn);
 
 }
@@ -146,6 +152,18 @@ async function initTables() {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
 
+    // client section table
+    await conn.execute(`
+      CREATE TABLE IF NOT EXISTS client_section (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        sectionTitle VARCHAR(255),
+        sectionSubtitle VARCHAR(255),
+        sectionDescription TEXT,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );
+    `);
+
     // client table
     await conn.execute(`
     CREATE TABLE IF NOT EXISTS client (
@@ -188,7 +206,19 @@ async function initTables() {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
 
-    // faq table
+    // FAQ section table
+    await conn.execute(`
+    CREATE TABLE IF NOT EXISTS faq_section (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        sectionTitle VARCHAR(255),
+        sectionSubtitle VARCHAR(255),
+        sectionDescription TEXT,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );
+    `);
+
+    // FAQ table
     await conn.execute(`
     CREATE TABLE IF NOT EXISTS faq (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -214,19 +244,32 @@ async function initTables() {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
 
+
+    // Testimonials section table
+    await conn.execute(`
+    CREATE TABLE IF NOT EXISTS testimonial_section (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        sectionTitle VARCHAR(255),
+        sectionSubtitle VARCHAR(255),
+        sectionDescription TEXT,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+    `);
+
     // testimonials table
     await conn.execute(`
     CREATE TABLE IF NOT EXISTS testimonials (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255),
-    subTitle VARCHAR(255),
-    tag VARCHAR(100),
-    text TEXT NOT NULL,
-    img VARCHAR(500),
-    name VARCHAR(255) NOT NULL,
-    role VARCHAR(255),
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+     id INT AUTO_INCREMENT PRIMARY KEY,
+     title VARCHAR(255),
+     subTitle VARCHAR(255),
+     tag VARCHAR(100),
+     text TEXT NOT NULL,
+     img VARCHAR(500),
+     name VARCHAR(255) NOT NULL,
+     role VARCHAR(255),
+     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `);
 
@@ -245,35 +288,35 @@ async function initTables() {
 
     // job_posts table
     await conn.execute(`
-        CREATE TABLE IF NOT EXISTS job_posts (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            title VARCHAR(255) NOT NULL,
-            department VARCHAR(255),
-            location VARCHAR(255),
-            type ENUM('Full-Time', 'Part-Time', 'Contract', 'Internship') DEFAULT 'Full-Time',
-            description LONGTEXT,
-            requirements LONGTEXT,
-            responsibilities LONGTEXT,
-            salary VARCHAR(100),
-            deadline DATE,
-            image VARCHAR(500),
-            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    CREATE TABLE IF NOT EXISTS job_posts (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        department VARCHAR(255),
+        location VARCHAR(255),
+        type ENUM('Full-Time', 'Part-Time', 'Contract', 'Internship') DEFAULT 'Full-Time',
+        description LONGTEXT,
+        requirements LONGTEXT,
+        responsibilities LONGTEXT,
+        salary VARCHAR(100),
+        deadline DATE,
+        image VARCHAR(500),
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
 
     // contact_us table
     await conn.execute(`
-        CREATE TABLE IF NOT EXISTS contact_us (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            email VARCHAR(255) NOT NULL,
-            subject VARCHAR(255) NOT NULL,
-            message LONGTEXT,
-            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    CREATE TABLE IF NOT EXISTS contact_us (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        subject VARCHAR(255) NOT NULL,
+        message LONGTEXT,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
 
@@ -324,16 +367,19 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
 app.use("/api", pagesModule.router);
 app.use("/api", cmsModule.router);
 app.use("/api", galleryModule.router);
+app.use("/api", clientSectionModule.router);
 app.use("/api", clientModule.router);
 app.use("/api", newsBlogModule.router);
 app.use("/api", caseStudyModule.router);
 app.use("/api", pricingModule.router);
 app.use("/api", faqModule.router);
+app.use("/api", faqSectionModule.router);
 app.use("/api", jobPostModule.router);
 app.use("/api", ourTeamModule.router);
 app.use("/api", contactUsModule.router);
 app.use("/api", jobApplicationModule.router);
 app.use("/api", testimonialsModule.router);
+app.use("/api", testimonialSectionModule.router);
 app.use("/api", featureSectionModule.router);
 
 
