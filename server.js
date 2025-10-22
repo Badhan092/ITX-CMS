@@ -16,10 +16,14 @@ const clientSectionModule = require("./routes/clientSection");
 const clientModule = require("./routes/client");
 const newsBlogModule = require("./routes/newsBlog");
 const caseStudyModule = require("./routes/caseStudy");
+const caseStudySectionModule = require("./routes/caseStudySection");
 const pricingModule = require("./routes/pricing");
 const ourTeamModule = require("./routes/ourteam");
+const ourTeamSectionModule = require("./routes/ourteamSection");
+const jobSectionModule = require("./routes/jobSection");
 const jobPostModule = require("./routes/jobPost");
 const contactUsModule = require("./routes/contactUs");
+const contactSectionModule = require("./routes/contactSection");
 const jobApplicationModule = require("./routes/jobApplication");
 const testimonialsModule = require("./routes/testimonials");
 const testimonialSectionModule = require("./routes/testimonialSection");
@@ -30,9 +34,7 @@ const app = express();
 app.use(express.json());
 
 // Allow requests from frontend
-app.use(cors({
-    origin: [/http:\/\/localhost:\d+$/], credentials: true,
-}));
+app.use(cors({origin: [/http:\/\/localhost:\d+$/], credentials: true,}));
 
 // Serve uploaded files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -62,10 +64,14 @@ async function connectDB() {
     faqSectionModule.setConnection(conn);
     newsBlogModule.setConnection(conn);
     caseStudyModule.setConnection(conn);
+    caseStudySectionModule.setConnection(conn);
     pricingModule.setConnection(conn);
     ourTeamModule.setConnection(conn);
+    ourTeamSectionModule.setConnection(conn);
     jobPostModule.setConnection(conn);
     contactUsModule.setConnection(conn);
+    contactSectionModule.setConnection(conn);
+    jobSectionModule.setConnection(conn);
     jobApplicationModule.setConnection(conn);
     testimonialsModule.setConnection(conn);
     testimonialSectionModule.setConnection(conn);
@@ -173,7 +179,7 @@ async function initTables() {
       description TEXT,
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
 
     // news_blog table
@@ -188,8 +194,20 @@ async function initTables() {
       date DATE NOT NULL,
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
+
+    // Case Study section table
+    await conn.execute(`
+    CREATE TABLE IF NOT EXISTS casestudy_section (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      sectionTitle VARCHAR(255),
+      sectionSubtitle VARCHAR(255),
+      sectionDescription TEXT,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+     );
+    `);
 
     // case_study table
     await conn.execute(`
@@ -244,7 +262,6 @@ async function initTables() {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
 
-
     // Testimonials section table
     await conn.execute(`
     CREATE TABLE IF NOT EXISTS testimonial_section (
@@ -272,6 +289,19 @@ async function initTables() {
      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `);
+
+    // ourteam section table
+    await conn.execute(`
+    CREATE TABLE IF NOT EXISTS ourteam_section (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        sectionTitle VARCHAR(255),
+        sectionSubtitle VARCHAR(255),
+        sectionDescription TEXT,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );
+    `);
+
 
     // ourteam table
     await conn.execute(`
@@ -305,6 +335,19 @@ async function initTables() {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
+    // contactus section table
+    await conn.execute(`
+    CREATE TABLE IF NOT EXISTS contactus_section (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        sectionTitle VARCHAR(255),
+        sectionSubtitle VARCHAR(255),
+        sectionDescription TEXT,
+        sectionImage VARCHAR(500),
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );
+    `);
+
 
     // contact_us table
     await conn.execute(`
@@ -319,6 +362,17 @@ async function initTables() {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
+    // job section table
+    await conn.execute(`
+    CREATE TABLE IF NOT EXISTS job_section (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        sectionTitle VARCHAR(255),
+        sectionSubtitle VARCHAR(255),
+        sectionDescription TEXT,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      );
+    `);
 
     // job_applications table
     await conn.execute(`
@@ -334,8 +388,6 @@ async function initTables() {
         CONSTRAINT fk_job_application FOREIGN KEY (job_id) REFERENCES job_posts(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `);
-
-
 }
 
 // Multer for file uploads
@@ -371,12 +423,16 @@ app.use("/api", clientSectionModule.router);
 app.use("/api", clientModule.router);
 app.use("/api", newsBlogModule.router);
 app.use("/api", caseStudyModule.router);
+app.use("/api", caseStudySectionModule.router)
 app.use("/api", pricingModule.router);
 app.use("/api", faqModule.router);
 app.use("/api", faqSectionModule.router);
+app.use("/api", jobSectionModule.router);
 app.use("/api", jobPostModule.router);
 app.use("/api", ourTeamModule.router);
+app.use("/api", ourTeamSectionModule.router);
 app.use("/api", contactUsModule.router);
+app.use("/api", contactSectionModule.router)
 app.use("/api", jobApplicationModule.router);
 app.use("/api", testimonialsModule.router);
 app.use("/api", testimonialSectionModule.router);
