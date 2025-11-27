@@ -36,12 +36,13 @@ app.use(express.json());
 // Allow requests from frontend
 app.use(cors({origin: [/http:\/\/localhost:\d+$/], credentials: true,}));
 
-// Serve uploaded files
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 let conn;
 
-// Wrap the DB connection in an async function
+// -----------------------
+// DB connection
+// -----------------------
+
 async function connectDB() {
     conn = await mysql.createConnection({
         host: process.env.DB_HOST || "localhost",
@@ -54,32 +55,42 @@ async function connectDB() {
 
     console.log("✅ MySQL connected!");
 
-    // Pass connection to modules
-    pagesModule.setConnection(conn);
-    cmsModule.setConnection(conn);
-    galleryModule.setConnection(conn);
-    clientSectionModule.setConnection(conn);
-    clientModule.setConnection(conn);
-    faqModule.setConnection(conn);
-    faqSectionModule.setConnection(conn);
-    newsBlogModule.setConnection(conn);
-    caseStudyModule.setConnection(conn);
-    caseStudySectionModule.setConnection(conn);
-    pricingModule.setConnection(conn);
-    ourTeamModule.setConnection(conn);
-    ourTeamSectionModule.setConnection(conn);
-    jobPostModule.setConnection(conn);
-    contactUsModule.setConnection(conn);
-    contactSectionModule.setConnection(conn);
-    jobSectionModule.setConnection(conn);
-    jobApplicationModule.setConnection(conn);
-    testimonialsModule.setConnection(conn);
-    testimonialSectionModule.setConnection(conn);
-    featureSectionModule.setConnection(conn);
 
+    // -----------------------
+    // Pass connection to modules
+    // -----------------------
+
+    const modules = [
+        pagesModule,
+        cmsModule,
+        galleryModule,
+        clientSectionModule,
+        clientModule,
+        faqModule,
+        faqSectionModule,
+        newsBlogModule,
+        caseStudyModule,
+        caseStudySectionModule,
+        pricingModule,
+        ourTeamModule,
+        ourTeamSectionModule,
+        jobPostModule,
+        contactUsModule,
+        contactSectionModule,
+        jobSectionModule,
+        jobApplicationModule,
+        testimonialsModule,
+        testimonialSectionModule,
+        featureSectionModule,
+    ];
+
+    modules.forEach((mod) => mod.setConnection(conn));
 }
 
+// -----------------------
 // Initialize tables
+// -----------------------
+
 async function initTables() {
     if (!conn) throw new Error("No DB connection");
 
@@ -390,28 +401,51 @@ async function initTables() {
 `);
 }
 
-// Multer for file uploads
+// -----------------------
+// Multer: File Uploads
+// -----------------------
+
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, {recursive: true});
+
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadDir = path.join(__dirname, "uploads");
-        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, {recursive: true});
-        cb(null, uploadDir);
-    }, filename: (req, file, cb) => {
+    destination: (req, file, cb) => cb(null, uploadDir),
+    filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);
-        cb(null, Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ext);
+        const filename =
+            Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ext;
+        cb(null, filename);
     },
 });
+
 const upload = multer({storage});
 
-// Root Route
+// -----------------------
+// Routes
+// -----------------------
+
 app.get("/", (req, res) => res.send("CMS backend is running"));
 
-
-// Upload Endpoint
+// Upload endpoint: returns API URL
 app.post("/api/upload", upload.single("file"), (req, res) => {
     if (!req.file) return res.status(400).json({message: "No file uploaded"});
-    const url = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+
+    // Serve file via API endpoint
+    const url = `${req.protocol}://${req.get("host")}/api/uploads/${req.file.filename}`;
     res.json({url, filename: req.file.filename});
+});
+
+
+// Serve uploaded files via API
+app.get("/api/uploads/:filename", (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(uploadDir, filename);
+
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({message: "File not found"});
+    }
+
+    res.sendFile(filePath);
 });
 
 
