@@ -96,309 +96,683 @@ async function initTables() {
 
     // pages table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS pages (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      title VARCHAR(255) NOT NULL,
-      slug VARCHAR(255) NOT NULL UNIQUE,
-      description TEXT,
-      content LONGTEXT,
-      mediaUrl VARCHAR(255),
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `);
+        CREATE TABLE IF NOT EXISTS pages
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            title
+            VARCHAR
+        (
+            255
+        ) NOT NULL,
+            slug VARCHAR
+        (
+            255
+        ) NOT NULL UNIQUE,
+            description TEXT,
+            content LONGTEXT,
+            mediaUrl VARCHAR
+        (
+            255
+        ),
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
     // sections table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS sections (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      page_id INT NOT NULL,
-      title VARCHAR(255) NULL,
-      subtitle VARCHAR(255) NULL,
-      classname VARCHAR(255) NOT NULL,
-      position INT DEFAULT 0,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      CONSTRAINT fk_sections_page FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `);
+        CREATE TABLE IF NOT EXISTS sections
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            page_id
+            INT
+            NOT
+            NULL,
+            title
+            VARCHAR
+        (
+            255
+        ) NULL,
+            subtitle VARCHAR
+        (
+            255
+        ) NULL,
+            classname VARCHAR
+        (
+            255
+        ) NOT NULL,
+            position INT DEFAULT 0,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            CONSTRAINT fk_sections_page FOREIGN KEY
+        (
+            page_id
+        ) REFERENCES pages
+        (
+            id
+        )
+                                                          ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
     // section_rows table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS section_rows (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      section_id INT NOT NULL,
-      title VARCHAR(255) NULL,
-      subtitle VARCHAR(255) NULL,
-      button VARCHAR(255) NULL,
-      classname VARCHAR(255) NULL,
-      content LONGTEXT NULL,
-      mediaUrl VARCHAR(255) NULL,
-      position INT DEFAULT 0,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      CONSTRAINT fk_rows_section FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `);
+        CREATE TABLE IF NOT EXISTS section_rows
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            section_id
+            INT
+            NOT
+            NULL,
+            title
+            VARCHAR
+        (
+            255
+        ) NULL,
+            subtitle VARCHAR
+        (
+            255
+        ) NULL,
+            button VARCHAR
+        (
+            255
+        ) NULL,
+            classname VARCHAR
+        (
+            255
+        ) NULL,
+            content LONGTEXT NULL,
+            mediaUrl VARCHAR
+        (
+            255
+        ) NULL,
+            position INT DEFAULT 0,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            CONSTRAINT fk_rows_section FOREIGN KEY
+        (
+            section_id
+        ) REFERENCES sections
+        (
+            id
+        )
+                                                          ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
     // feature_section table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS feature_section (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      title VARCHAR(255) NOT NULL,
-      subtitle VARCHAR(255),
-      description LONGTEXT,
-      slugs JSON,
-      images JSON,
-      button1 VARCHAR(255),
-      button2 VARCHAR(255),
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `);
+        CREATE TABLE IF NOT EXISTS feature_section
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            title
+            VARCHAR
+        (
+            255
+        ) NOT NULL,
+            subtitle VARCHAR
+        (
+            255
+        ),
+            description LONGTEXT,
+            slugs JSON,
+            images JSON,
+            button1 VARCHAR
+        (
+            255
+        ),
+            button2 VARCHAR
+        (
+            255
+        ),
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
     // gallery table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS gallery (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      imageUrl VARCHAR(255) NOT NULL,
-      title VARCHAR(255) NOT NULL,
-      description TEXT,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `);
+        CREATE TABLE IF NOT EXISTS gallery
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            imageUrl
+            VARCHAR
+        (
+            255
+        ) NOT NULL,
+            title VARCHAR
+        (
+            255
+        ) NOT NULL,
+            description TEXT,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
     // client section table
     await conn.execute(`
-      CREATE TABLE IF NOT EXISTS client_section (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        sectionTitle VARCHAR(255),
-        sectionSubtitle VARCHAR(255),
-        sectionDescription TEXT,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        );
+        CREATE TABLE IF NOT EXISTS client_section
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            sectionTitle
+            VARCHAR
+        (
+            255
+        ),
+            sectionSubtitle VARCHAR
+        (
+            255
+        ),
+            sectionDescription TEXT,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );
     `);
 
     // client table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS client (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      imageUrl VARCHAR(255) NOT NULL,
-      title VARCHAR(255),
-      description TEXT,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `);
+        CREATE TABLE IF NOT EXISTS client
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            imageUrl
+            VARCHAR
+        (
+            255
+        ) NOT NULL,
+            title VARCHAR
+        (
+            255
+        ),
+            description TEXT,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
     // news_blog table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS news_blog (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      imageUrl VARCHAR(255) NOT NULL,
-      title VARCHAR(255) NOT NULL,
-      subtitle VARCHAR(255),
-      description TEXT,
-      link VARCHAR(255),
-      date DATE NOT NULL,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `);
+        CREATE TABLE IF NOT EXISTS news_blog
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            imageUrl
+            VARCHAR
+        (
+            255
+        ) NOT NULL,
+            title VARCHAR
+        (
+            255
+        ) NOT NULL,
+            subtitle VARCHAR
+        (
+            255
+        ),
+            description TEXT,
+            link VARCHAR
+        (
+            255
+        ),
+            date DATE NOT NULL,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
     // Case Study section table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS casestudy_section (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      sectionTitle VARCHAR(255),
-      sectionSubtitle VARCHAR(255),
-      sectionDescription TEXT,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-     );
+        CREATE TABLE IF NOT EXISTS casestudy_section
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            sectionTitle
+            VARCHAR
+        (
+            255
+        ),
+            sectionSubtitle VARCHAR
+        (
+            255
+        ),
+            sectionDescription TEXT,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );
     `);
 
     // case_study table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS case_study (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      imageUrl VARCHAR(255) NOT NULL,
-      title VARCHAR(255) NOT NULL,
-      subtitle VARCHAR(255),
-      description TEXT,
-      link VARCHAR(255),
-      date DATE NOT NULL,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `);
+        CREATE TABLE IF NOT EXISTS case_study
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            imageUrl
+            VARCHAR
+        (
+            255
+        ) NOT NULL,
+            title VARCHAR
+        (
+            255
+        ) NOT NULL,
+            subtitle VARCHAR
+        (
+            255
+        ),
+            description TEXT,
+            link VARCHAR
+        (
+            255
+        ),
+            date DATE NOT NULL,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
     // FAQ section table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS faq_section (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        sectionTitle VARCHAR(255),
-        sectionSubtitle VARCHAR(255),
-        sectionDescription TEXT,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        );
+        CREATE TABLE IF NOT EXISTS faq_section
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            sectionTitle
+            VARCHAR
+        (
+            255
+        ),
+            sectionSubtitle VARCHAR
+        (
+            255
+        ),
+            sectionDescription TEXT,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );
     `);
 
     // FAQ table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS faq (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      question VARCHAR(255) NOT NULL,
-      answer TEXT NOT NULL,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `);
+        CREATE TABLE IF NOT EXISTS faq
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            question
+            VARCHAR
+        (
+            255
+        ) NOT NULL,
+            answer TEXT NOT NULL,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
     // pricing table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS pricing (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      tag VARCHAR(255),
-      sub VARCHAR(255),
-      price VARCHAR(50) NOT NULL,
-      features JSON NOT NULL,
-      active TINYINT(1) DEFAULT 0,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `);
+        CREATE TABLE IF NOT EXISTS pricing
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            name
+            VARCHAR
+        (
+            255
+        ) NOT NULL,
+            tag VARCHAR
+        (
+            255
+        ),
+            sub VARCHAR
+        (
+            255
+        ),
+            price VARCHAR
+        (
+            50
+        ) NOT NULL,
+            features JSON NOT NULL,
+            active TINYINT
+        (
+            1
+        ) DEFAULT 0,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
     // Testimonials section table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS testimonial_section (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        sectionTitle VARCHAR(255),
-        sectionSubtitle VARCHAR(255),
-        sectionDescription TEXT,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    );
+        CREATE TABLE IF NOT EXISTS testimonial_section
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            sectionTitle
+            VARCHAR
+        (
+            255
+        ),
+            sectionSubtitle VARCHAR
+        (
+            255
+        ),
+            sectionDescription TEXT,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );
     `);
 
     // testimonials table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS testimonials (
-     id INT AUTO_INCREMENT PRIMARY KEY,
-     title VARCHAR(255),
-     subTitle VARCHAR(255),
-     tag VARCHAR(100),
-     text TEXT NOT NULL,
-     img VARCHAR(500),
-     name VARCHAR(255) NOT NULL,
-     role VARCHAR(255),
-     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-`);
+        CREATE TABLE IF NOT EXISTS testimonials
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            title
+            VARCHAR
+        (
+            255
+        ),
+            subTitle VARCHAR
+        (
+            255
+        ),
+            tag VARCHAR
+        (
+            100
+        ),
+            text TEXT NOT NULL,
+            img VARCHAR
+        (
+            500
+        ),
+            name VARCHAR
+        (
+            255
+        ) NOT NULL,
+            role VARCHAR
+        (
+            255
+        ),
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
     // ourteam section table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS ourteam_section (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        sectionTitle VARCHAR(255),
-        sectionSubtitle VARCHAR(255),
-        sectionDescription TEXT,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        );
+        CREATE TABLE IF NOT EXISTS ourteam_section
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            sectionTitle
+            VARCHAR
+        (
+            255
+        ),
+            sectionSubtitle VARCHAR
+        (
+            255
+        ),
+            sectionDescription TEXT,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );
     `);
 
 
     // ourteam table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS ourteam (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      role VARCHAR(255) NOT NULL,
-      photo VARCHAR(500) NOT NULL,
-      message LONGTEXT,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `);
+        CREATE TABLE IF NOT EXISTS ourteam
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            name
+            VARCHAR
+        (
+            255
+        ) NOT NULL,
+            role VARCHAR
+        (
+            255
+        ) NOT NULL,
+            photo VARCHAR
+        (
+            500
+        ) NOT NULL,
+            message LONGTEXT,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
     // job_posts table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS job_posts (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        title VARCHAR(255) NOT NULL,
-        department VARCHAR(255),
-        location VARCHAR(255),
-        type ENUM('Full-Time', 'Part-Time', 'Contract', 'Internship') DEFAULT 'Full-Time',
-        description LONGTEXT,
-        requirements LONGTEXT,
-        responsibilities LONGTEXT,
-        salary VARCHAR(100),
-        deadline DATE,
-        image VARCHAR(500),
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        CREATE TABLE IF NOT EXISTS job_posts
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            title
+            VARCHAR
+        (
+            255
+        ) NOT NULL,
+            department VARCHAR
+        (
+            255
+        ),
+            location VARCHAR
+        (
+            255
+        ),
+            type ENUM
+        (
+            'Full-Time',
+            'Part-Time',
+            'Contract',
+            'Internship'
+        ) DEFAULT 'Full-Time',
+            description LONGTEXT,
+            requirements LONGTEXT,
+            responsibilities LONGTEXT,
+            salary VARCHAR
+        (
+            100
+        ),
+            deadline DATE,
+            image VARCHAR
+        (
+            500
+        ),
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
     // contactus section table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS contactus_section (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        sectionTitle VARCHAR(255),
-        sectionSubtitle VARCHAR(255),
-        sectionDescription TEXT,
-        sectionImage VARCHAR(500),
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        );
+        CREATE TABLE IF NOT EXISTS contactus_section
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            sectionTitle
+            VARCHAR
+        (
+            255
+        ),
+            sectionSubtitle VARCHAR
+        (
+            255
+        ),
+            sectionDescription TEXT,
+            sectionImage VARCHAR
+        (
+            500
+        ),
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );
     `);
 
 
     // contact_us table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS contact_us (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        subject VARCHAR(255) NOT NULL,
-        message LONGTEXT,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        CREATE TABLE IF NOT EXISTS contact_us
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            name
+            VARCHAR
+        (
+            255
+        ) NOT NULL,
+            email VARCHAR
+        (
+            255
+        ) NOT NULL,
+            subject VARCHAR
+        (
+            255
+        ) NOT NULL,
+            message LONGTEXT,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
     // job section table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS job_section (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        sectionTitle VARCHAR(255),
-        sectionSubtitle VARCHAR(255),
-        sectionDescription TEXT,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      );
+        CREATE TABLE IF NOT EXISTS job_section
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            sectionTitle
+            VARCHAR
+        (
+            255
+        ),
+            sectionSubtitle VARCHAR
+        (
+            255
+        ),
+            sectionDescription TEXT,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );
     `);
 
     // job_applications table
     await conn.execute(`
-    CREATE TABLE IF NOT EXISTS job_applications (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        job_id INT NOT NULL,
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        phone VARCHAR(50) NOT NULL,
-        message LONGTEXT,
-        resume VARCHAR(500) NOT NULL,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        CONSTRAINT fk_job_application FOREIGN KEY (job_id) REFERENCES job_posts(id) ON DELETE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-`);
+        CREATE TABLE IF NOT EXISTS job_applications
+        (
+            id
+            INT
+            AUTO_INCREMENT
+            PRIMARY
+            KEY,
+            job_id
+            INT
+            NOT
+            NULL,
+            name
+            VARCHAR
+        (
+            255
+        ) NOT NULL,
+            email VARCHAR
+        (
+            255
+        ) NOT NULL,
+            phone VARCHAR
+        (
+            50
+        ) NOT NULL,
+            message LONGTEXT,
+            resume VARCHAR
+        (
+            500
+        ) NOT NULL,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT fk_job_application FOREIGN KEY
+        (
+            job_id
+        ) REFERENCES job_posts
+        (
+            id
+        ) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 }
 
 // -----------------------
@@ -426,12 +800,15 @@ const upload = multer({storage});
 
 app.get("/", (req, res) => res.send("CMS backend is running"));
 
-// Upload endpoint: returns API URL
+// Upload endpoint: returns URL based on FILE_BASE_URL
 app.post("/api/upload", upload.single("file"), (req, res) => {
     if (!req.file) return res.status(400).json({message: "No file uploaded"});
 
-    // Serve file via API endpoint
-    const url = `${req.protocol}://${req.get("host")}/api/uploads/${req.file.filename}`;
+    // ⚠️ Use FRONTEND/CLIENT URL instead of backend
+    const fileBaseUrl = process.env.FILE_BASE_URL || `${req.protocol}://${req.get("host")}`;
+
+    const url = `${fileBaseUrl}/api/uploads/${req.file.filename}`;
+
     res.json({url, filename: req.file.filename});
 });
 
