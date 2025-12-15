@@ -35,10 +35,7 @@ router.get("/feature/:id", async (req, res) => {
     const id = req.params.id;
 
     try {
-        const [rows] = await conn.execute(
-            "SELECT * FROM feature_section WHERE id=?",
-            [id]
-        );
+        const [rows] = await conn.execute("SELECT * FROM feature_section WHERE id=?", [id]);
 
         if (!rows.length)
             return res.status(404).json({ message: "Feature not found" });
